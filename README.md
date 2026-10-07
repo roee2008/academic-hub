@@ -1,7 +1,5 @@
 # Nexus Academic Hub — Unified Multi-Account Academic Dashboard
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/roee2008/academic-hub)
-
 A full-stack academic dashboard that aggregates school data across multiple Google accounts (e.g. personal and institutional `.edu` Google Workspace accounts), consolidating Google Classroom assignments, Google Drive course folders, local task management, and weekly bell schedules into a single dark-mode workspace.
 
 ---

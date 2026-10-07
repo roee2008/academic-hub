@@ -31,38 +31,37 @@ import httpx
 def is_google_configured() -> bool:
     return bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
 
-def get_oauth_flow(redirect_uri: Optional[str] = None) -> Flow:
-    r_uri = redirect_uri or GOOGLE_REDIRECT_URI
+def get_oauth_flow() -> Flow:
     client_config = {
         "web": {
             "client_id": GOOGLE_CLIENT_ID,
             "client_secret": GOOGLE_CLIENT_SECRET,
             "auth_uri": "https://accounts.google.com/o/oauth2/auth",
             "token_uri": "https://oauth2.googleapis.com/token",
-            "redirect_uris": [r_uri],
+            "redirect_uris": [GOOGLE_REDIRECT_URI],
         }
     }
     flow = Flow.from_client_config(
         client_config,
         scopes=GOOGLE_SCOPES,
-        redirect_uri=r_uri,
+        redirect_uri=GOOGLE_REDIRECT_URI,
     )
     flow.autogenerate_code_verifier = False
     return flow
 
-def get_authorization_url(account_type: str = "personal", redirect_uri: Optional[str] = None) -> tuple[str, str]:
-    flow = get_oauth_flow(redirect_uri=redirect_uri)
+def get_authorization_url(account_type: str = "personal") -> tuple[str, str]:
+    flow = get_oauth_flow()
     flow.autogenerate_code_verifier = False
     auth_url, _ = flow.authorization_url(
         access_type="offline",
         include_granted_scopes="true",
         prompt="consent",
-        state=json.dumps({"account_type": account_type, "redirect_uri": redirect_uri or GOOGLE_REDIRECT_URI}),
+        state=json.dumps({"account_type": account_type}),
     )
     return auth_url, flow.code_verifier or ""
 
-def exchange_code_for_tokens(code: str, redirect_uri: Optional[str] = None) -> Dict[str, Any]:
-    flow = get_oauth_flow(redirect_uri=redirect_uri)
+def exchange_code_for_tokens(code: str) -> Dict[str, Any]:
+    flow = get_oauth_flow()
     flow.autogenerate_code_verifier = False
     flow.fetch_token(code=code)
     creds = flow.credentials

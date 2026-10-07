@@ -4,11 +4,8 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 import logging
 from contextlib import asynccontextmanager
-from pathlib import Path
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 
 from app.database import init_db
 from app.sync_engine import sync_engine
@@ -65,35 +62,14 @@ app.include_router(timetable.router)
 app.include_router(sync.router)
 app.include_router(export.router)
 
-# Production Frontend Static Serving
-FRONTEND_DIST = Path(os.getenv("FRONTEND_DIST", str(Path(__file__).resolve().parent.parent / "frontend" / "dist")))
-
-if FRONTEND_DIST.exists() and (FRONTEND_DIST / "index.html").exists():
-    if (FRONTEND_DIST / "assets").exists():
-        app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets")), name="assets")
-
-    @app.get("/")
-    async def serve_root():
-        return FileResponse(str(FRONTEND_DIST / "index.html"))
-
-    @app.get("/{full_path:path}")
-    async def serve_spa(full_path: str):
-        if full_path.startswith("api") or full_path in ("docs", "openapi.json", "redoc"):
-            raise HTTPException(status_code=404, detail="Not Found")
-        file_path = FRONTEND_DIST / full_path
-        if full_path and file_path.is_file():
-            return FileResponse(str(file_path))
-        return FileResponse(str(FRONTEND_DIST / "index.html"))
-else:
-    @app.get("/")
-    def read_root():
-        return {
-            "service": "Unified Academic Dashboard API",
-            "status": "ONLINE",
-            "docs": "/docs",
-        }
+@app.get("/")
+def read_root():
+    return {
+        "service": "Unified Academic Dashboard API",
+        "status": "ONLINE",
+        "docs": "/docs",
+    }
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", "8000"))
-    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

@@ -1,4 +1,3 @@
-import os
 import json
 import logging
 import urllib.parse
@@ -25,8 +24,8 @@ from app.google_service import (
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 @router.get("/status")
-def get_auth_config_status():
-    """Return whether Google OAuth credentials are configured."""
+def get_auth_status():
+    """Return whether Google OAuth is configured and current account count."""
     return {
         "is_configured": is_google_configured(),
         "client_id_prefix": GOOGLE_CLIENT_ID[:12] + "..." if GOOGLE_CLIENT_ID else None,
@@ -55,23 +54,8 @@ def get_accounts(session: Session = Depends(get_session)):
         )
     return result
 
-def resolve_redirect_uri(request: Request) -> str:
-    env_uri = os.getenv("GOOGLE_REDIRECT_URI")
-    if env_uri and "localhost" not in env_uri and "127.0.0.1" not in env_uri:
-        return env_uri
-
-    forwarded_host = request.headers.get("x-forwarded-host") or request.headers.get("host")
-    forwarded_proto = request.headers.get("x-forwarded-proto") or request.url.scheme
-    if forwarded_host and "localhost" not in forwarded_host and "127.0.0.1" not in forwarded_host:
-        return f"{forwarded_proto}://{forwarded_host}/api/auth/google/callback"
-
-    return env_uri or "http://localhost:8000/api/auth/google/callback"
-
 @router.get("/google/start")
-def start_google_oauth(
-    request: Request,
-    account_type: str = Query("personal", pattern="^(personal|edu)$"),
-):
+def start_google_oauth(account_type: str = Query("personal", pattern="^(personal|edu)$")):
     """Start Google OAuth 2.0 flow for personal or institutional account."""
     if not is_google_configured():
         raise HTTPException(
@@ -79,36 +63,29 @@ def start_google_oauth(
             detail="Google OAuth credentials are not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in backend/.env.",
         )
     try:
-        redirect_uri = resolve_redirect_uri(request)
-        logger.info(f"Starting Google OAuth with redirect_uri: {redirect_uri}")
-        url, _ = get_authorization_url(account_type=account_type, redirect_uri=redirect_uri)
+        url, _ = get_authorization_url(account_type=account_type)
         return {"auth_url": url}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/google/callback")
 def google_oauth_callback(
-    request: Request,
     code: str = Query(...),
     state: Optional[str] = Query(None),
     session: Session = Depends(get_session),
 ):
     """Handle callback from Google OAuth."""
     account_type = "personal"
-    state_redirect_uri = None
     if state:
         try:
             parsed_state = json.loads(state)
             account_type = parsed_state.get("account_type", "personal")
-            state_redirect_uri = parsed_state.get("redirect_uri")
         except Exception:
             pass
 
-    effective_redirect_uri = state_redirect_uri or resolve_redirect_uri(request)
-
     try:
-        logger.info(f"Processing Google OAuth callback with code length {len(code)}, redirect_uri: {effective_redirect_uri}")
-        token_data = exchange_code_for_tokens(code, redirect_uri=effective_redirect_uri)
+        logger.info(f"Processing Google OAuth callback with code length {len(code)}")
+        token_data = exchange_code_for_tokens(code)
         email = token_data["email"]
         logger.info(f"OAuth code successfully exchanged for email: {email}")
 
@@ -148,12 +125,12 @@ def google_oauth_callback(
         except Exception as sync_err:
             logger.warning(f"Initial sync warning for {email}: {sync_err}")
 
-        # Redirect back to frontend on same origin
-        return RedirectResponse(url="/?auth_success=true", status_code=303)
+        # Redirect back to frontend
+        return RedirectResponse(url="http://localhost:5173/?auth_success=true", status_code=303)
     except Exception as e:
         logger.error(f"Google OAuth callback error: {e}", exc_info=True)
         encoded_err = urllib.parse.quote(str(e))
-        return RedirectResponse(url=f"/?auth_error={encoded_err}", status_code=303)
+        return RedirectResponse(url=f"http://localhost:5173/?auth_error={encoded_err}", status_code=303)
 
 @router.post("/accounts/disconnect/{account_id}")
 def disconnect_account(account_id: str, session: Session = Depends(get_session)):
@@ -167,17 +144,19 @@ def disconnect_account(account_id: str, session: Session = Depends(get_session))
     return {"status": "SUCCESS", "message": f"Account {account.email} disconnected."}
 
 @router.post("/demo/reset")
-def reset_demo_data(session: Session = Depends(get_session)):
-    """Reset database with demo data."""
-    # Delete all data
-    for model in [File, Assignment, Course, Account]:
-        session.exec(select(model))
-    session.rollback()
-    
-    # Clean recreate
-    from app.database import engine
-    from sqlmodel import SQLModel
-    SQLModel.metadata.drop_all(engine)
-    SQLModel.metadata.create_all(engine)
+def reset_demo(session: Session = Depends(get_session)):
+    """Reset the database and reseed demo Stanford and Personal accounts."""
+    session.exec(select(File)).all()
+    # Delete in cascade order
+    for f in session.exec(select(File)).all():
+        session.delete(f)
+    for a in session.exec(select(Assignment)).all():
+        session.delete(a)
+    for c in session.exec(select(Course)).all():
+        session.delete(c)
+    for acc in session.exec(select(Account)).all():
+        session.delete(acc)
+    session.commit()
+
     seed_demo_data(session)
-    return {"status": "SUCCESS", "message": "Demo data reset successfully."}
+    return {"status": "SUCCESS", "message": "Demo data reseeded successfully."}
