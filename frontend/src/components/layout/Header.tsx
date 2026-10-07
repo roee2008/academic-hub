@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, RefreshCw, Plus, ShieldCheck, Clock, Menu, Smartphone } from 'lucide-react';
+import { Search, RefreshCw, Plus, ShieldCheck, Clock, Menu, Smartphone, ArrowLeftRight } from 'lucide-react';
 import { SyncStatus } from '../../types';
 import { formatLastSync } from '../../utils/date';
 
@@ -14,6 +14,7 @@ interface HeaderProps {
   onToggleMobileMenu?: () => void;
   onInstallApp?: () => void;
   canInstall?: boolean;
+  onOpenDeviceSync?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -27,6 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleMobileMenu,
   onInstallApp,
   canInstall,
+  onOpenDeviceSync,
 }) => {
   const getTabTitle = () => {
     switch (currentTab) {
@@ -109,6 +111,18 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </button>
         </div>
+
+        {/* Sync Devices Button */}
+        {onOpenDeviceSync && (
+          <button
+            onClick={onOpenDeviceSync}
+            className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-md bg-surface-2 hover:bg-surface-hover border border-stroke text-xs text-content-primary transition-all cursor-pointer"
+            title="Sync courses and timetable between devices"
+          >
+            <ArrowLeftRight className="w-3.5 h-3.5 text-accent-indigo" />
+            <span className="hidden sm:inline">Sync Devices</span>
+          </button>
+        )}
 
         {/* Install App Button on Mobile/PWA */}
         {canInstall && onInstallApp && (

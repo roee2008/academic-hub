@@ -17,6 +17,7 @@ import { FileHub } from './components/files/FileHub';
 import { FilePreviewModal } from './components/files/FilePreviewModal';
 import { AccountsModal } from './components/accounts/AccountsModal';
 import { OmniboxModal } from './components/search/OmniboxModal';
+import { DeviceSyncModal } from './components/sync/DeviceSyncModal';
 
 import {
   Account,
@@ -71,6 +72,7 @@ export const App: React.FC = () => {
   const [isAccountsModalOpen, setIsAccountsModalOpen] = useState(false);
   const [isOmniboxOpen, setIsOmniboxOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDeviceSyncOpen, setIsDeviceSyncOpen] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<any>(null);
   const [authBanner, setAuthBanner] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
@@ -330,6 +332,7 @@ export const App: React.FC = () => {
           onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           canInstall={Boolean(installPrompt)}
           onInstallApp={handleInstallApp}
+          onOpenDeviceSync={() => setIsDeviceSyncOpen(true)}
         />
 
         {/* Auth Banner Alert */}
@@ -523,6 +526,14 @@ export const App: React.FC = () => {
         }}
         onPreviewFile={(f) => setPreviewingFile(f)}
         onNavigateTab={(tab) => setCurrentTab(tab)}
+      />
+
+      <DeviceSyncModal
+        isOpen={isDeviceSyncOpen}
+        onClose={() => setIsDeviceSyncOpen(false)}
+        courses={courses}
+        timetableSlots={timetableSlots}
+        onRefreshData={loadDashboardData}
       />
     </div>
   );
