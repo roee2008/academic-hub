@@ -37,7 +37,7 @@ export const TaskDetailPane: React.FC<TaskDetailPaneProps> = ({
 }) => {
   if (!task) {
     return (
-      <div className="w-80 lg:w-96 flex-shrink-0 bg-surface-1 border-l border-stroke flex flex-col items-center justify-center p-6 text-center select-none">
+      <div className="hidden md:flex w-80 lg:w-96 flex-shrink-0 bg-surface-1 border-l border-stroke flex-col items-center justify-center p-6 text-center select-none">
         <FileText className="w-10 h-10 text-content-dim mb-3 stroke-[1.5]" />
         <h4 className="text-xs font-semibold text-content-primary font-headline">
           Task Focus Inspector
@@ -50,7 +50,7 @@ export const TaskDetailPane: React.FC<TaskDetailPaneProps> = ({
   }
 
   return (
-    <aside className="w-80 lg:w-96 flex-shrink-0 bg-surface-1 border-l border-stroke flex flex-col h-full overflow-y-auto">
+    <aside className="fixed inset-0 z-40 bg-surface-1 md:static md:w-80 lg:w-96 flex-shrink-0 md:border-l border-stroke flex flex-col h-full overflow-y-auto">
       {/* Header */}
       <div className="p-4 border-b border-stroke flex items-start justify-between bg-surface-2/30">
         <div className="space-y-1">

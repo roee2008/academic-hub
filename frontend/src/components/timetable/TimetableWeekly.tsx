@@ -63,7 +63,9 @@ export const TimetableWeekly: React.FC<TimetableWeeklyProps> = ({
   onDeleteSlot,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'cards'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'cards'>(() => {
+    return typeof window !== 'undefined' && window.innerWidth < 768 ? 'cards' : 'grid';
+  });
   const [showSaturday, setShowSaturday] = useState(false);
 
   const todayDay = new Date().getDay(); // 0 is Sun, 1 is Mon, etc.
@@ -134,7 +136,7 @@ export const TimetableWeekly: React.FC<TimetableWeeklyProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center space-x-2 self-end sm:self-auto">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
           {/* Saturday Toggle if no Saturday slots exist yet */}
           {!hasSaturdaySlots && (
             <button
@@ -400,7 +402,7 @@ export const TimetableWeekly: React.FC<TimetableWeeklyProps> = ({
           /* ============================================================ */
           /* CARD LIST VIEW WITH DURATION-BASED HEIGHTS                   */
           /* ============================================================ */
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 min-w-[760px] h-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 w-full">
             {daysConfig.map(({ day, name, short }) => {
               const daySlots = slots
                 .filter((s) => s.day_of_week === day)
@@ -479,7 +481,7 @@ export const TimetableWeekly: React.FC<TimetableWeeklyProps> = ({
                                     </span>
                                     <button
                                       onClick={() => onDeleteSlot(slot.id)}
-                                      className="opacity-0 group-hover:opacity-100 text-content-dim hover:text-rose-400 p-0.5 rounded transition-all cursor-pointer"
+                                      className="opacity-70 sm:opacity-0 group-hover:opacity-100 sm:group-hover:opacity-100 text-content-dim hover:text-rose-400 p-0.5 rounded transition-all cursor-pointer"
                                       title="Remove slot"
                                     >
                                       <Trash2 className="w-3 h-3" />

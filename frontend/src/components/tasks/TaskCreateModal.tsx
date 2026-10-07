@@ -69,10 +69,10 @@ export const TaskCreateModal: React.FC<TaskCreateModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-lg bg-surface-1 border border-stroke rounded-lg shadow-modal overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
+      <div className="w-full max-w-lg bg-surface-1 border border-stroke rounded-xl shadow-modal overflow-hidden max-h-[92vh] flex flex-col">
         {/* Modal Header */}
-        <div className="px-5 py-4 border-b border-stroke flex items-center justify-between bg-surface-2/40">
+        <div className="px-5 py-4 border-b border-stroke flex items-center justify-between bg-surface-2/40 flex-shrink-0">
           <div className="flex items-center space-x-2">
             <Plus className="w-4 h-4 text-accent-indigo" />
             <h3 className="font-headline font-semibold text-sm text-content-primary">
@@ -88,7 +88,7 @@ export const TaskCreateModal: React.FC<TaskCreateModalProps> = ({
         </div>
 
         {/* Modal Form */}
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-4 overflow-y-auto flex-1">
           {/* Title */}
           <div>
             <label className="block text-[11px] font-mono text-content-muted uppercase mb-1">

@@ -65,14 +65,14 @@ export const TaskList: React.FC<TaskListProps> = ({
   return (
     <div className="flex-1 flex flex-col h-full bg-canvas overflow-hidden">
       {/* Filters & Control Bar */}
-      <div className="p-4 border-b border-stroke bg-surface-1/50 space-y-3">
+      <div className="p-3 sm:p-4 border-b border-stroke bg-surface-1/50 space-y-2.5 sm:space-y-3">
         {/* Top Row: Search & Status Segments */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
           {/* Status Tabs */}
-          <div className="flex items-center space-x-1 p-1 bg-surface-2 rounded-md border border-stroke text-xs">
+          <div className="flex items-center space-x-1 p-1 bg-surface-2 rounded-md border border-stroke text-xs overflow-x-auto max-w-full">
             <button
               onClick={() => setStatusFilter('ALL')}
-              className={`px-2.5 py-1 rounded transition-all ${
+              className={`px-2.5 py-1 rounded transition-all whitespace-nowrap ${
                 statusFilter === 'ALL'
                   ? 'bg-accent-indigo text-white font-medium'
                   : 'text-content-muted hover:text-content-primary'
@@ -82,7 +82,7 @@ export const TaskList: React.FC<TaskListProps> = ({
             </button>
             <button
               onClick={() => setStatusFilter('TODO')}
-              className={`px-2.5 py-1 rounded transition-all ${
+              className={`px-2.5 py-1 rounded transition-all whitespace-nowrap ${
                 statusFilter === 'TODO'
                   ? 'bg-accent-indigo text-white font-medium'
                   : 'text-content-muted hover:text-content-primary'
@@ -92,7 +92,7 @@ export const TaskList: React.FC<TaskListProps> = ({
             </button>
             <button
               onClick={() => setStatusFilter('IN_PROGRESS')}
-              className={`px-2.5 py-1 rounded transition-all ${
+              className={`px-2.5 py-1 rounded transition-all whitespace-nowrap ${
                 statusFilter === 'IN_PROGRESS'
                   ? 'bg-accent-indigo text-white font-medium'
                   : 'text-content-muted hover:text-content-primary'
@@ -102,7 +102,7 @@ export const TaskList: React.FC<TaskListProps> = ({
             </button>
             <button
               onClick={() => setStatusFilter('DONE')}
-              className={`px-2.5 py-1 rounded transition-all ${
+              className={`px-2.5 py-1 rounded transition-all whitespace-nowrap ${
                 statusFilter === 'DONE'
                   ? 'bg-accent-indigo text-white font-medium'
                   : 'text-content-muted hover:text-content-primary'
@@ -113,15 +113,15 @@ export const TaskList: React.FC<TaskListProps> = ({
           </div>
 
           {/* Source Segments */}
-          <div className="flex items-center space-x-1 text-xs">
-            <span className="text-[11px] font-mono text-content-dim mr-1 hidden md:inline">
+          <div className="flex items-center space-x-1 text-xs overflow-x-auto max-w-full">
+            <span className="text-[11px] font-mono text-content-dim mr-1 hidden sm:inline">
               SOURCE:
             </span>
             <button
               onClick={() => setSourceFilter('ALL')}
-              className={`px-2 py-1 rounded text-xs border ${
+              className={`px-2.5 py-1 rounded text-xs border whitespace-nowrap ${
                 sourceFilter === 'ALL'
-                  ? 'border-accent-indigo bg-accent-indigo/10 text-accent-indigo'
+                  ? 'border-accent-indigo bg-accent-indigo/10 text-accent-indigo font-medium'
                   : 'border-stroke bg-surface-2 text-content-dim hover:text-content-primary'
               }`}
             >
@@ -129,9 +129,9 @@ export const TaskList: React.FC<TaskListProps> = ({
             </button>
             <button
               onClick={() => setSourceFilter('CLASSROOM')}
-              className={`px-2 py-1 rounded text-xs border ${
+              className={`px-2.5 py-1 rounded text-xs border whitespace-nowrap ${
                 sourceFilter === 'CLASSROOM'
-                  ? 'border-accent-indigo bg-accent-indigo/10 text-accent-indigo'
+                  ? 'border-accent-indigo bg-accent-indigo/10 text-accent-indigo font-medium'
                   : 'border-stroke bg-surface-2 text-content-dim hover:text-content-primary'
               }`}
             >
@@ -139,9 +139,9 @@ export const TaskList: React.FC<TaskListProps> = ({
             </button>
             <button
               onClick={() => setSourceFilter('MANUAL')}
-              className={`px-2 py-1 rounded text-xs border ${
+              className={`px-2.5 py-1 rounded text-xs border whitespace-nowrap ${
                 sourceFilter === 'MANUAL'
-                  ? 'border-accent-indigo bg-accent-indigo/10 text-accent-indigo'
+                  ? 'border-accent-indigo bg-accent-indigo/10 text-accent-indigo font-medium'
                   : 'border-stroke bg-surface-2 text-content-dim hover:text-content-primary'
               }`}
             >

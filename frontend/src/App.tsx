@@ -302,7 +302,7 @@ export const App: React.FC = () => {
   const selectedCourse = courses.find((c) => c.id === selectedCourseId);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-canvas text-content-primary">
+    <div className="flex h-screen h-[100dvh] w-screen overflow-hidden bg-canvas text-content-primary">
       {/* 1. Left Navigation Sidebar */}
       <Sidebar
         currentTab={currentTab}
@@ -319,7 +319,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Workspace Frame */}
-      <div className="flex-1 flex flex-col min-w-0 h-full">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         {/* Top Header */}
         <Header
           currentTab={currentTab}
@@ -338,7 +338,7 @@ export const App: React.FC = () => {
         {/* Auth Banner Alert */}
         {authBanner && (
           <div
-            className={`px-6 py-2.5 flex items-center justify-between text-xs border-b ${
+            className={`px-4 sm:px-6 py-2.5 flex items-center justify-between text-xs border-b ${
               authBanner.type === 'success'
                 ? 'bg-accent-emerald/15 border-accent-emerald/30 text-accent-emerald'
                 : 'bg-rose-500/15 border-rose-500/30 text-rose-300'
@@ -361,26 +361,26 @@ export const App: React.FC = () => {
 
         {/* Permissions Update Banner */}
         {!authBanner && accounts.some((a) => a.needs_reconnect) && (
-          <div className="px-6 py-2 bg-amber-500/15 border-b border-amber-500/30 text-amber-200 text-xs flex items-center justify-between animate-fadeIn">
+          <div className="px-4 sm:px-6 py-2 bg-amber-500/15 border-b border-amber-500/30 text-amber-200 text-xs flex items-center justify-between animate-fadeIn">
             <div className="flex items-center space-x-2 truncate">
               <span className="font-semibold uppercase tracking-wider text-[10px] font-mono text-amber-400 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30">
                 ACTION REQUIRED
               </span>
               <span className="truncate">
-                Google Classroom permissions must be updated to sync non-assignment Classwork materials (slides, handouts).
+                Google Classroom permissions must be updated to sync non-assignment Classwork materials.
               </span>
             </div>
             <button
               onClick={() => setIsAccountsModalOpen(true)}
               className="px-2.5 py-1 rounded bg-amber-500/25 hover:bg-amber-500/35 border border-amber-500/40 text-amber-100 font-medium text-xs transition-colors cursor-pointer flex-shrink-0 ml-4"
             >
-              Update Permissions
+              Update
             </button>
           </div>
         )}
 
         {/* Center + Right 3-Pane Body */}
-        <div className="flex-1 flex min-w-0 h-[calc(100vh-3.5rem)] overflow-hidden">
+        <main className="flex-1 flex min-w-0 min-h-0 overflow-hidden relative">
           {/* Main View Switcher */}
           {currentTab === 'today' && (
             <TodayScheduleCard
@@ -440,7 +440,7 @@ export const App: React.FC = () => {
               onDeleteSlot={handleDeleteSlot}
             />
           )}
-        </div>
+        </main>
 
         {/* Mobile Bottom Navigation Bar */}
         <nav className="md:hidden flex items-center justify-around bg-surface-1 border-t border-stroke py-2 px-1 z-20 flex-shrink-0 select-none">

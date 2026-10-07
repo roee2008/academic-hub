@@ -72,25 +72,35 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Middle Search Omnibox Trigger */}
-      <div className="flex-1 max-w-xs sm:max-w-md mx-2 sm:mx-6">
+      <div className="flex-1 max-w-xs sm:max-w-md mx-1 sm:mx-6 flex justify-end sm:justify-start">
+        {/* Mobile compact search icon button */}
         <button
           onClick={onOpenOmnibox}
-          className="w-full flex items-center justify-between px-3 py-1.5 rounded-md bg-canvas border border-stroke text-content-muted hover:border-stroke-bright hover:text-content-primary transition-all text-xs cursor-pointer shadow-subtle group"
+          className="sm:hidden p-2 rounded-md bg-canvas border border-stroke text-content-muted hover:text-content-primary transition-all cursor-pointer"
+          title="Search"
+        >
+          <Search className="w-4 h-4 text-content-dim" />
+        </button>
+
+        {/* Desktop full search bar */}
+        <button
+          onClick={onOpenOmnibox}
+          className="hidden sm:flex w-full items-center justify-between px-3 py-1.5 rounded-md bg-canvas border border-stroke text-content-muted hover:border-stroke-bright hover:text-content-primary transition-all text-xs cursor-pointer shadow-subtle group"
         >
           <div className="flex items-center space-x-2">
             <Search className="w-3.5 h-3.5 text-content-dim group-hover:text-accent-indigo" />
-            <span>Search courses, tasks, or drive files...</span>
+            <span className="truncate">Search courses, tasks, or drive files...</span>
           </div>
-          <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-2 border border-stroke text-content-dim">
+          <kbd className="hidden lg:inline-block px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-2 border border-stroke text-content-dim">
             ⌘K
           </kbd>
         </button>
       </div>
 
       {/* Right Action Cluster */}
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-1 sm:space-x-2">
         {/* Sync Status Badge & Trigger */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1.5">
           <div className="hidden lg:flex items-center space-x-1.5 text-[11px] font-mono text-content-dim">
             <Clock className="w-3 h-3" />
             <span>Synced {formatLastSync(syncStatus?.last_synced_at)}</span>
@@ -98,7 +108,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onTriggerSync}
             disabled={syncStatus?.is_syncing}
-            className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-md bg-surface-2 hover:bg-surface-hover border border-stroke text-xs text-content-primary transition-all cursor-pointer disabled:opacity-50"
+            className="flex items-center justify-center p-2 sm:px-2.5 sm:py-1.5 rounded-md bg-surface-2 hover:bg-surface-hover border border-stroke text-xs text-content-primary transition-all cursor-pointer disabled:opacity-50"
             title="Instant Refresh: sync Google Classroom & Drive"
           >
             <RefreshCw
@@ -106,7 +116,7 @@ export const Header: React.FC<HeaderProps> = ({
                 syncStatus?.is_syncing ? 'animate-spin' : ''
               }`}
             />
-            <span className="hidden sm:inline">
+            <span className="hidden md:inline ml-1.5">
               {syncStatus?.is_syncing ? 'Syncing...' : 'Instant Refresh'}
             </span>
           </button>
@@ -116,11 +126,11 @@ export const Header: React.FC<HeaderProps> = ({
         {onOpenDeviceSync && (
           <button
             onClick={onOpenDeviceSync}
-            className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-md bg-surface-2 hover:bg-surface-hover border border-stroke text-xs text-content-primary transition-all cursor-pointer"
+            className="flex items-center justify-center p-2 sm:px-2.5 sm:py-1.5 rounded-md bg-surface-2 hover:bg-surface-hover border border-stroke text-xs text-content-primary transition-all cursor-pointer"
             title="Sync courses and timetable between devices"
           >
             <ArrowLeftRight className="w-3.5 h-3.5 text-accent-indigo" />
-            <span className="hidden sm:inline">Sync Devices</span>
+            <span className="hidden md:inline ml-1.5">Sync Devices</span>
           </button>
         )}
 
@@ -128,21 +138,22 @@ export const Header: React.FC<HeaderProps> = ({
         {canInstall && onInstallApp && (
           <button
             onClick={onInstallApp}
-            className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-md bg-accent-emerald/20 hover:bg-accent-emerald/30 border border-accent-emerald/40 text-accent-emerald text-xs font-medium transition-all cursor-pointer"
+            className="flex items-center justify-center p-2 sm:px-2.5 sm:py-1.5 rounded-md bg-accent-emerald/20 hover:bg-accent-emerald/30 border border-accent-emerald/40 text-accent-emerald text-xs font-medium transition-all cursor-pointer"
             title="Install Nexus Hub on your phone"
           >
             <Smartphone className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Install</span>
+            <span className="hidden md:inline ml-1.5">Install</span>
           </button>
         )}
 
         {/* Quick Add Assignment */}
         <button
           onClick={onOpenQuickAdd}
-          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-accent-indigo hover:bg-accent-indigo/90 text-white text-xs font-medium shadow-subtle transition-all cursor-pointer"
+          className="flex items-center justify-center p-2 sm:px-3 sm:py-1.5 rounded-md bg-accent-indigo hover:bg-accent-indigo/90 text-white text-xs font-medium shadow-subtle transition-all cursor-pointer"
+          title="Add New Task"
         >
           <Plus className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">New Task</span>
+          <span className="hidden sm:inline ml-1">New Task</span>
         </button>
       </div>
     </header>

@@ -270,33 +270,33 @@ export const AccountsModal: React.FC<AccountsModalProps> = ({
   const activeCoursesCount = courses.filter((c) => !c.is_hidden).length;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-3xl bg-surface-1 border border-stroke rounded-lg shadow-modal flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+      <div className="w-full max-w-3xl bg-surface-1 border border-stroke rounded-xl shadow-modal flex flex-col max-h-[92vh] overflow-hidden">
         {/* Header */}
-        <div className="px-5 py-4 border-b border-stroke flex items-center justify-between bg-surface-2/40">
+        <div className="px-4 sm:px-5 py-3.5 border-b border-stroke flex items-center justify-between bg-surface-2/40 flex-shrink-0">
           <div className="flex items-center space-x-2.5">
-            <div className="p-1.5 rounded bg-accent-indigo/15 text-accent-indigo border border-accent-indigo/30">
+            <div className="p-1.5 rounded bg-accent-indigo/15 text-accent-indigo border border-accent-indigo/30 flex-shrink-0">
               <Users className="w-4 h-4" />
             </div>
-            <div>
-              <h3 className="font-headline font-semibold text-sm text-content-primary">
+            <div className="min-w-0">
+              <h3 className="font-headline font-semibold text-sm text-content-primary truncate">
                 Workspace & Account Settings
               </h3>
-              <p className="text-[11px] text-content-dim">
+              <p className="text-[11px] text-content-dim truncate">
                 Multi-Account Google Classroom, Drive folders, and Enrolled Classes
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-content-dim hover:text-content-primary p-1 rounded hover:bg-surface-2 cursor-pointer"
+            className="text-content-dim hover:text-content-primary p-1.5 rounded hover:bg-surface-2 cursor-pointer flex-shrink-0 ml-2"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Tab Navigation */}
-        <div className="px-5 pt-3 border-b border-stroke flex space-x-4 text-xs">
+        <div className="px-4 sm:px-5 pt-3 border-b border-stroke flex space-x-3 sm:space-x-4 text-xs overflow-x-auto whitespace-nowrap flex-shrink-0">
           <button
             onClick={() => setActiveTab('accounts')}
             className={`pb-2.5 font-medium border-b-2 transition-all cursor-pointer ${

@@ -55,9 +55,9 @@ export const TodayScheduleCard: React.FC<TodayScheduleCardProps> = ({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-canvas">
+    <div className="flex-1 overflow-y-auto p-3.5 sm:p-6 space-y-4 sm:space-y-6 bg-canvas">
       {/* Date & Hero Banner */}
-      <div className="p-5 rounded-lg bg-surface-1 border border-stroke flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 rounded-lg bg-surface-1 border border-stroke flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div>
           <div className="flex items-center space-x-2 text-xs font-mono text-accent-indigo">
             <Calendar className="w-3.5 h-3.5" />
@@ -65,7 +65,7 @@ export const TodayScheduleCard: React.FC<TodayScheduleCardProps> = ({
               {schedule.day_name} • {schedule.date_str}
             </span>
           </div>
-          <h2 className="font-headline font-bold text-xl text-content-primary mt-1">
+          <h2 className="font-headline font-bold text-lg sm:text-xl text-content-primary mt-1">
             Academic Focus & Schedule
           </h2>
           <p className="text-xs text-content-dim mt-0.5">
@@ -75,7 +75,7 @@ export const TodayScheduleCard: React.FC<TodayScheduleCardProps> = ({
 
         <button
           onClick={onNavigateToTimetable}
-          className="flex items-center space-x-1 px-3 py-1.5 rounded bg-surface-2 hover:bg-surface-hover border border-stroke text-xs text-content-primary transition-all font-medium cursor-pointer"
+          className="flex items-center space-x-1 px-3 py-1.5 rounded bg-surface-2 hover:bg-surface-hover border border-stroke text-xs text-content-primary transition-all font-medium cursor-pointer self-start sm:self-auto"
         >
           <span>Full Timetable</span>
           <ArrowRight className="w-3.5 h-3.5" />
@@ -83,9 +83,9 @@ export const TodayScheduleCard: React.FC<TodayScheduleCardProps> = ({
       </div>
 
       {/* Grid: Left Column (Today's Classes), Right Column (Subject Assignments) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Today's Classes List */}
-        <div className="rounded-lg bg-surface-1 border border-stroke p-5 space-y-4">
+        <div className="rounded-lg bg-surface-1 border border-stroke p-4 sm:p-5 space-y-3.5 sm:space-y-4">
           <div className="flex items-center justify-between border-b border-stroke pb-3">
             <h3 className="font-headline font-semibold text-sm text-content-primary flex items-center gap-2">
               <Clock className="w-4 h-4 text-accent-indigo" />

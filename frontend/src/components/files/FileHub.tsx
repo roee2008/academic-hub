@@ -410,118 +410,220 @@ export const FileHub: React.FC<FileHubProps> = ({
             </p>
           </div>
         ) : (
-          <div className="rounded-lg border border-stroke overflow-hidden bg-surface-1">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-surface-2/70 border-b border-stroke text-[11px] font-mono text-content-dim select-none">
-                <tr>
-                  <th className="py-2.5 px-4 font-normal">DOCUMENT TITLE</th>
-                  <th className="py-2.5 px-4 font-normal">COURSE</th>
-                  <th className="py-2.5 px-4 font-normal">SOURCE ORIGIN</th>
-                  <th className="py-2.5 px-4 font-normal">FILE SIZE</th>
-                  <th className="py-2.5 px-4 font-normal text-right">ACTIONS</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stroke/60">
-                {filteredFiles.map((file) => (
-                  <tr
-                    key={file.id}
-                    className="hover:bg-surface-2/40 transition-colors group"
-                  >
-                    <td className="py-3 px-4">
-                      <div className="flex items-center space-x-2.5">
-                        <FileText className="w-4 h-4 text-accent-cyan flex-shrink-0" />
-                        <span className="font-medium text-content-primary truncate max-w-xs sm:max-w-md">
+          <>
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-2.5">
+              {filteredFiles.map((file) => (
+                <div
+                  key={file.id}
+                  className="p-3 rounded-lg bg-surface-1 border border-stroke space-y-2.5"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-start space-x-2.5 min-w-0 flex-1">
+                      <FileText className="w-4 h-4 text-accent-cyan flex-shrink-0 mt-0.5" />
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-xs font-medium text-content-primary leading-tight break-words">
                           {file.title}
-                        </span>
+                        </h4>
+                        <div className="flex items-center space-x-2 mt-1.5 flex-wrap gap-y-1">
+                          <span
+                            className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border"
+                            style={{
+                              backgroundColor: `${file.course_color}18`,
+                              borderColor: `${file.course_color}35`,
+                              color: file.course_color || '#818CF8',
+                            }}
+                          >
+                            <span
+                              className="w-1.5 h-1.5 rounded-full mr-1"
+                              style={{ backgroundColor: file.course_color || '#6366F1' }}
+                            />
+                            {file.course_name}
+                          </span>
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-2 text-content-dim border border-stroke">
+                            {file.source === 'CLASSROOM' ? 'Classroom' : 'Drive Folder'}
+                          </span>
+                          <span className="text-content-dim font-mono text-[10px]">
+                            {formatBytes(file.size_bytes)}
+                          </span>
+                        </div>
                       </div>
-                    </td>
+                    </div>
+                  </div>
 
-                    <td className="py-3 px-4">
-                      <span
-                        className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border"
-                        style={{
-                          backgroundColor: `${file.course_color}18`,
-                          borderColor: `${file.course_color}35`,
-                          color: file.course_color || '#818CF8',
-                        }}
+                  {/* Actions Bar */}
+                  <div className="flex items-center justify-between pt-2 border-t border-stroke/60">
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setPreviewingFile(file)}
+                        className="px-2.5 py-1 rounded bg-surface-2 hover:bg-surface-hover border border-stroke text-content-primary text-[11px] font-medium flex items-center gap-1 transition-all cursor-pointer"
                       >
-                        <span
-                          className="w-1.5 h-1.5 rounded-full mr-1"
-                          style={{ backgroundColor: file.course_color || '#6366F1' }}
-                        />
-                        {file.course_name}
-                      </span>
-                    </td>
+                        <Eye className="w-3 h-3 text-accent-indigo" />
+                        <span>Preview</span>
+                      </button>
 
-                    <td className="py-3 px-4">
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-2 text-content-dim border border-stroke">
-                        {file.source === 'CLASSROOM' ? 'Classroom' : 'Drive Folder'}
-                      </span>
-                    </td>
+                      <a
+                        href={`/api/files/${file.id}/download`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-2.5 py-1 rounded bg-surface-2 hover:bg-surface-hover border border-stroke text-content-primary text-[11px] font-medium flex items-center gap-1 transition-colors"
+                      >
+                        <Download className="w-3 h-3 text-accent-emerald" />
+                        <span>Download</span>
+                      </a>
+                    </div>
 
-                    <td className="py-3 px-4 text-content-dim font-mono text-[11px]">
-                      {formatBytes(file.size_bytes)}
-                    </td>
-
-                    <td className="py-3 px-4 text-right">
-                      <div className="flex items-center justify-end space-x-1.5">
-                        <button
-                          onClick={() => setPreviewingFile(file)}
-                          className="px-2 py-1 rounded bg-surface-2 hover:bg-surface-hover border border-stroke text-content-primary text-[11px] font-medium flex items-center gap-1 transition-all cursor-pointer"
-                          title="Preview in app modal"
-                        >
-                          <Eye className="w-3 h-3 text-accent-indigo" />
-                          <span>Preview</span>
-                        </button>
-
+                    <div className="flex items-center space-x-1.5">
+                      {file.drive_web_view_link && (
                         <a
-                          href={`/api/files/${file.id}/download`}
+                          href={file.drive_web_view_link}
                           target="_blank"
                           rel="noreferrer"
-                          className="p-1 rounded text-content-dim hover:text-accent-emerald hover:bg-surface-2 transition-colors"
-                          title="Download via authenticated stream proxy"
+                          className="p-1.5 rounded text-content-dim hover:text-content-primary hover:bg-surface-2 transition-colors"
+                          title="Open in Google Drive tab"
                         >
-                          <Download className="w-3.5 h-3.5" />
+                          <ExternalLink className="w-3.5 h-3.5" />
                         </a>
+                      )}
 
-                        {file.drive_web_view_link && (
+                      {viewIgnored ? (
+                        <button
+                          onClick={() => handleUnignore(file.id)}
+                          className="p-1 rounded text-accent-indigo hover:text-white hover:bg-accent-indigo/20 border border-accent-indigo/30 transition-colors cursor-pointer flex items-center gap-1 text-[11px] px-2"
+                          title="Restore this file"
+                        >
+                          <RotateCcw className="w-3 h-3" />
+                          <span>Restore</span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleIgnore(file.id)}
+                          className="p-1.5 rounded text-content-dim hover:text-rose-400 hover:bg-surface-2 transition-colors cursor-pointer"
+                          title="Ignore / hide this file"
+                        >
+                          <EyeOff className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block rounded-lg border border-stroke overflow-x-auto bg-surface-1">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-surface-2/70 border-b border-stroke text-[11px] font-mono text-content-dim select-none">
+                  <tr>
+                    <th className="py-2.5 px-4 font-normal">DOCUMENT TITLE</th>
+                    <th className="py-2.5 px-4 font-normal">COURSE</th>
+                    <th className="py-2.5 px-4 font-normal">SOURCE ORIGIN</th>
+                    <th className="py-2.5 px-4 font-normal">FILE SIZE</th>
+                    <th className="py-2.5 px-4 font-normal text-right">ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stroke/60">
+                  {filteredFiles.map((file) => (
+                    <tr
+                      key={file.id}
+                      className="hover:bg-surface-2/40 transition-colors group"
+                    >
+                      <td className="py-3 px-4">
+                        <div className="flex items-center space-x-2.5">
+                          <FileText className="w-4 h-4 text-accent-cyan flex-shrink-0" />
+                          <span className="font-medium text-content-primary truncate max-w-xs sm:max-w-md">
+                            {file.title}
+                          </span>
+                        </div>
+                      </td>
+
+                      <td className="py-3 px-4">
+                        <span
+                          className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border"
+                          style={{
+                            backgroundColor: `${file.course_color}18`,
+                            borderColor: `${file.course_color}35`,
+                            color: file.course_color || '#818CF8',
+                          }}
+                        >
+                          <span
+                            className="w-1.5 h-1.5 rounded-full mr-1"
+                            style={{ backgroundColor: file.course_color || '#6366F1' }}
+                          />
+                          {file.course_name}
+                        </span>
+                      </td>
+
+                      <td className="py-3 px-4">
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-2 text-content-dim border border-stroke">
+                          {file.source === 'CLASSROOM' ? 'Classroom' : 'Drive Folder'}
+                        </span>
+                      </td>
+
+                      <td className="py-3 px-4 text-content-dim font-mono text-[11px]">
+                        {formatBytes(file.size_bytes)}
+                      </td>
+
+                      <td className="py-3 px-4 text-right">
+                        <div className="flex items-center justify-end space-x-1.5">
+                          <button
+                            onClick={() => setPreviewingFile(file)}
+                            className="px-2 py-1 rounded bg-surface-2 hover:bg-surface-hover border border-stroke text-content-primary text-[11px] font-medium flex items-center gap-1 transition-all cursor-pointer"
+                            title="Preview in app modal"
+                          >
+                            <Eye className="w-3 h-3 text-accent-indigo" />
+                            <span>Preview</span>
+                          </button>
+
                           <a
-                            href={file.drive_web_view_link}
+                            href={`/api/files/${file.id}/download`}
                             target="_blank"
                             rel="noreferrer"
-                            className="p-1 rounded text-content-dim hover:text-content-primary hover:bg-surface-2 transition-colors"
-                            title="Open in Google Drive tab"
+                            className="p-1 rounded text-content-dim hover:text-accent-emerald hover:bg-surface-2 transition-colors"
+                            title="Download via authenticated stream proxy"
                           >
-                            <ExternalLink className="w-3.5 h-3.5" />
+                            <Download className="w-3.5 h-3.5" />
                           </a>
-                        )}
 
-                        {/* Ignore / Restore Action */}
-                        {viewIgnored ? (
-                          <button
-                            onClick={() => handleUnignore(file.id)}
-                            className="p-1 rounded text-accent-indigo hover:text-white hover:bg-accent-indigo/20 border border-accent-indigo/30 transition-colors cursor-pointer flex items-center gap-1 text-[11px] px-2"
-                            title="Restore this file to active course view"
-                          >
-                            <RotateCcw className="w-3 h-3" />
-                            <span>Restore</span>
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleIgnore(file.id)}
-                            className="p-1 rounded text-content-dim hover:text-rose-400 hover:bg-surface-2 transition-colors cursor-pointer"
-                            title="Ignore / hide this file"
-                          >
-                            <EyeOff className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                          {file.drive_web_view_link && (
+                            <a
+                              href={file.drive_web_view_link}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="p-1 rounded text-content-dim hover:text-content-primary hover:bg-surface-2 transition-colors"
+                              title="Open in Google Drive tab"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                          )}
+
+                          {/* Ignore / Restore Action */}
+                          {viewIgnored ? (
+                            <button
+                              onClick={() => handleUnignore(file.id)}
+                              className="p-1 rounded text-accent-indigo hover:text-white hover:bg-accent-indigo/20 border border-accent-indigo/30 transition-colors cursor-pointer flex items-center gap-1 text-[11px] px-2"
+                              title="Restore this file to active course view"
+                            >
+                              <RotateCcw className="w-3 h-3" />
+                              <span>Restore</span>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleIgnore(file.id)}
+                              className="p-1 rounded text-content-dim hover:text-rose-400 hover:bg-surface-2 transition-colors cursor-pointer"
+                              title="Ignore / hide this file"
+                            >
+                              <EyeOff className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
