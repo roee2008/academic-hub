@@ -1,7 +1,7 @@
 import json
 import logging
 import urllib.parse
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse
@@ -101,7 +101,7 @@ def google_oauth_callback(
                 refresh_token=encrypt_token(token_data.get("refresh_token")),
                 access_token=encrypt_token(token_data.get("access_token")),
                 token_expiry=token_data.get("token_expiry"),
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
             )
             session.add(account)
         else:

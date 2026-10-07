@@ -1,7 +1,7 @@
 import os
 import asyncio
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
@@ -140,7 +140,7 @@ def test_file_ignore_and_drive_link():
             drive_file_id=f"drive_{test_id}",
             source="CLASSROOM",
             is_ignored=False,
-            synced_at=datetime.utcnow()
+            synced_at=datetime.now(timezone.utc)
         )
         session.add(test_f)
         session.commit()

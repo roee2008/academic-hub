@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Generator
 from sqlmodel import SQLModel, create_engine, Session, select
 from sqlalchemy import event
@@ -59,7 +59,7 @@ def get_session() -> Generator[Session, None, None]:
         yield session
 
 def seed_demo_data(session: Session):
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     
     # 1. Accounts
     acc_personal = Account(
