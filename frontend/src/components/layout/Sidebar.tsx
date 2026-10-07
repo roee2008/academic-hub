@@ -9,6 +9,7 @@ import {
   GraduationCap,
   Sparkles,
   RefreshCw,
+  X,
 } from 'lucide-react';
 import { Account, Course } from '../../types';
 
@@ -22,6 +23,8 @@ interface SidebarProps {
   onOpenAccountsModal: () => void;
   isSyncing: boolean;
   onTriggerSync: () => void;
+  isOpenMobile?: boolean;
+  onCloseMobile?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -34,6 +37,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenAccountsModal,
   isSyncing,
   onTriggerSync,
+  isOpenMobile,
+  onCloseMobile,
 }) => {
   const navItems = [
     { id: 'today', label: "Today's Focus", icon: LayoutDashboard },
@@ -44,24 +49,44 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="w-64 flex-shrink-0 bg-surface-1 border-r border-stroke flex flex-col h-screen select-none">
-      {/* Brand Header */}
-      <div className="p-4 border-b border-stroke flex items-center justify-between">
-        <div className="flex items-center space-x-2.5">
-          <div className="w-8 h-8 rounded-md bg-accent-indigo/20 border border-accent-indigo/30 flex items-center justify-center text-accent-indigo">
-            <GraduationCap className="w-5 h-5" />
+    <>
+      {isOpenMobile && (
+        <div
+          className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-xs"
+          onClick={onCloseMobile}
+        />
+      )}
+      <aside
+        className={`fixed md:static inset-y-0 left-0 z-50 w-64 flex-shrink-0 bg-surface-1 border-r border-stroke flex flex-col h-screen select-none transition-transform duration-300 ease-in-out ${
+          isOpenMobile ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        }`}
+      >
+        {/* Brand Header */}
+        <div className="p-4 border-b border-stroke flex items-center justify-between">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-8 h-8 rounded-md bg-accent-indigo/20 border border-accent-indigo/30 flex items-center justify-center text-accent-indigo">
+              <GraduationCap className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="font-headline font-semibold text-sm tracking-tight text-content-primary flex items-center gap-1.5">
+                Nexus Academic
+                <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-accent-indigo/15 text-accent-indigo border border-accent-indigo/30">
+                  Hub
+                </span>
+              </h1>
+              <p className="text-[11px] text-content-dim">Multi-Workspace Aggregator</p>
+            </div>
           </div>
-          <div>
-            <h1 className="font-headline font-semibold text-sm tracking-tight text-content-primary flex items-center gap-1.5">
-              Nexus Academic
-              <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-accent-indigo/15 text-accent-indigo border border-accent-indigo/30">
-                Hub
-              </span>
-            </h1>
-            <p className="text-[11px] text-content-dim">Multi-Workspace Aggregator</p>
-          </div>
+          {onCloseMobile && (
+            <button
+              onClick={onCloseMobile}
+              className="md:hidden p-1.5 rounded-md text-content-dim hover:text-content-primary hover:bg-surface-2 cursor-pointer"
+              title="Close menu"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
-      </div>
 
       {/* Connected Accounts Quick Badges */}
       <div className="px-3 py-2.5 border-b border-stroke bg-canvas/40">
@@ -112,6 +137,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 } else {
                   setCurrentTab(item.id);
                 }
+                if (onCloseMobile) onCloseMobile();
               }}
               className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-colors ${
                 isActive
@@ -143,7 +169,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <span>COURSES</span>
           {selectedCourseId && (
             <button
-              onClick={() => setSelectedCourseId(null)}
+              onClick={() => {
+                setSelectedCourseId(null);
+                if (onCloseMobile) onCloseMobile();
+              }}
               className="text-[10px] text-content-muted hover:text-white"
             >
               Show All
@@ -152,7 +181,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
         <div className="space-y-1">
           <button
-            onClick={() => setSelectedCourseId(null)}
+            onClick={() => {
+              setSelectedCourseId(null);
+              if (onCloseMobile) onCloseMobile();
+            }}
             className={`w-full flex items-center px-2.5 py-1.5 rounded text-xs transition-colors text-left ${
               selectedCourseId === null
                 ? 'bg-surface-2 text-content-primary border border-stroke'
@@ -167,7 +199,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             return (
               <button
                 key={c.id}
-                onClick={() => setSelectedCourseId(c.id)}
+                onClick={() => {
+                  setSelectedCourseId(c.id);
+                  if (onCloseMobile) onCloseMobile();
+                }}
                 className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded text-xs transition-colors text-left group ${
                   isSelected
                     ? 'bg-surface-2 text-content-primary border border-stroke'
@@ -211,5 +246,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
     </aside>
+  </>
   );
 };

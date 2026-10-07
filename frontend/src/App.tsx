@@ -1,4 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import {
+  LayoutDashboard,
+  CheckSquare,
+  FolderOpen,
+  Calendar,
+  Users,
+} from 'lucide-react';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { TaskList } from './components/tasks/TaskList';
@@ -63,7 +70,28 @@ export const App: React.FC = () => {
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [isAccountsModalOpen, setIsAccountsModalOpen] = useState(false);
   const [isOmniboxOpen, setIsOmniboxOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
   const [authBanner, setAuthBanner] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  // Listen for PWA install event on Android
+  useEffect(() => {
+    const handleBeforeInstall = (e: Event) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setInstallPrompt(null);
+    }
+  };
 
   // Load all initial data
   const loadDashboardData = useCallback(async () => {
@@ -284,6 +312,8 @@ export const App: React.FC = () => {
         onOpenAccountsModal={() => setIsAccountsModalOpen(true)}
         isSyncing={Boolean(syncStatus?.is_syncing)}
         onTriggerSync={handleTriggerSync}
+        isOpenMobile={isMobileMenuOpen}
+        onCloseMobile={() => setIsMobileMenuOpen(false)}
       />
 
       {/* Main Workspace Frame */}
@@ -297,6 +327,9 @@ export const App: React.FC = () => {
           onOpenQuickAdd={() => setIsQuickAddOpen(true)}
           onOpenOmnibox={() => setIsOmniboxOpen(true)}
           onOpenAccountsModal={() => setIsAccountsModalOpen(true)}
+          onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          canInstall={Boolean(installPrompt)}
+          onInstallApp={handleInstallApp}
         />
 
         {/* Auth Banner Alert */}
@@ -405,6 +438,53 @@ export const App: React.FC = () => {
             />
           )}
         </div>
+
+        {/* Mobile Bottom Navigation Bar */}
+        <nav className="md:hidden flex items-center justify-around bg-surface-1 border-t border-stroke py-2 px-1 z-20 flex-shrink-0 select-none">
+          <button
+            onClick={() => setCurrentTab('today')}
+            className={`flex flex-col items-center justify-center py-1 px-3 rounded text-[11px] font-medium transition-colors cursor-pointer ${
+              currentTab === 'today' ? 'text-accent-indigo' : 'text-content-muted'
+            }`}
+          >
+            <LayoutDashboard className="w-5 h-5 mb-0.5" />
+            <span>Today</span>
+          </button>
+          <button
+            onClick={() => setCurrentTab('tasks')}
+            className={`flex flex-col items-center justify-center py-1 px-3 rounded text-[11px] font-medium transition-colors cursor-pointer ${
+              currentTab === 'tasks' ? 'text-accent-indigo' : 'text-content-muted'
+            }`}
+          >
+            <CheckSquare className="w-5 h-5 mb-0.5" />
+            <span>Tasks</span>
+          </button>
+          <button
+            onClick={() => setCurrentTab('files')}
+            className={`flex flex-col items-center justify-center py-1 px-3 rounded text-[11px] font-medium transition-colors cursor-pointer ${
+              currentTab === 'files' ? 'text-accent-indigo' : 'text-content-muted'
+            }`}
+          >
+            <FolderOpen className="w-5 h-5 mb-0.5" />
+            <span>Files</span>
+          </button>
+          <button
+            onClick={() => setCurrentTab('timetable')}
+            className={`flex flex-col items-center justify-center py-1 px-3 rounded text-[11px] font-medium transition-colors cursor-pointer ${
+              currentTab === 'timetable' ? 'text-accent-indigo' : 'text-content-muted'
+            }`}
+          >
+            <Calendar className="w-5 h-5 mb-0.5" />
+            <span>Schedule</span>
+          </button>
+          <button
+            onClick={() => setIsAccountsModalOpen(true)}
+            className="flex flex-col items-center justify-center py-1 px-3 rounded text-[11px] font-medium text-content-muted hover:text-content-primary cursor-pointer"
+          >
+            <Users className="w-5 h-5 mb-0.5" />
+            <span>Accounts</span>
+          </button>
+        </nav>
       </div>
 
       {/* Global Modals */}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, RefreshCw, Plus, ShieldCheck, Clock } from 'lucide-react';
+import { Search, RefreshCw, Plus, ShieldCheck, Clock, Menu, Smartphone } from 'lucide-react';
 import { SyncStatus } from '../../types';
 import { formatLastSync } from '../../utils/date';
 
@@ -11,6 +11,9 @@ interface HeaderProps {
   onOpenQuickAdd: () => void;
   onOpenOmnibox: () => void;
   onOpenAccountsModal: () => void;
+  onToggleMobileMenu?: () => void;
+  onInstallApp?: () => void;
+  canInstall?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -21,33 +24,45 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenQuickAdd,
   onOpenOmnibox,
   onOpenAccountsModal,
+  onToggleMobileMenu,
+  onInstallApp,
+  canInstall,
 }) => {
   const getTabTitle = () => {
     switch (currentTab) {
       case 'today':
-        return "Today's Academic Cockpit";
+        return "Today's Focus";
       case 'tasks':
-        return 'Assignment & Deliverable Ledger';
+        return 'Tasks & Homework';
       case 'files':
-        return 'Course Vault & Drive Index';
+        return 'Course Files';
       case 'timetable':
-        return 'Weekly Class Bell Schedule';
+        return 'Class Timetable';
       default:
         return 'Academic Workspace';
     }
   };
 
   return (
-    <header className="h-14 border-b border-stroke bg-surface-1/90 backdrop-blur-md px-6 flex items-center justify-between z-10 select-none">
+    <header className="h-14 border-b border-stroke bg-surface-1/90 backdrop-blur-md px-3 sm:px-6 flex items-center justify-between z-10 select-none">
       {/* Title & Context */}
-      <div className="flex items-center space-x-3">
-        <h2 className="font-headline font-semibold text-base text-content-primary">
+      <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+        {onToggleMobileMenu && (
+          <button
+            onClick={onToggleMobileMenu}
+            className="md:hidden p-1.5 -ml-1 rounded-md text-content-muted hover:text-content-primary hover:bg-surface-2 cursor-pointer"
+            title="Open courses & menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        )}
+        <h2 className="font-headline font-semibold text-sm sm:text-base text-content-primary truncate">
           {getTabTitle()}
         </h2>
         {selectedCourseName && (
           <>
-            <span className="text-content-dim">/</span>
-            <span className="px-2 py-0.5 rounded text-xs bg-surface-2 border border-stroke text-accent-indigo font-medium">
+            <span className="text-content-dim hidden sm:inline">/</span>
+            <span className="hidden sm:inline px-2 py-0.5 rounded text-xs bg-surface-2 border border-stroke text-accent-indigo font-medium truncate max-w-[120px]">
               {selectedCourseName}
             </span>
           </>
@@ -55,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Middle Search Omnibox Trigger */}
-      <div className="flex-1 max-w-md mx-6">
+      <div className="flex-1 max-w-xs sm:max-w-md mx-2 sm:mx-6">
         <button
           onClick={onOpenOmnibox}
           className="w-full flex items-center justify-between px-3 py-1.5 rounded-md bg-canvas border border-stroke text-content-muted hover:border-stroke-bright hover:text-content-primary transition-all text-xs cursor-pointer shadow-subtle group"
@@ -95,13 +110,25 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
 
+        {/* Install App Button on Mobile/PWA */}
+        {canInstall && onInstallApp && (
+          <button
+            onClick={onInstallApp}
+            className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-md bg-accent-emerald/20 hover:bg-accent-emerald/30 border border-accent-emerald/40 text-accent-emerald text-xs font-medium transition-all cursor-pointer"
+            title="Install Nexus Hub on your phone"
+          >
+            <Smartphone className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Install</span>
+          </button>
+        )}
+
         {/* Quick Add Assignment */}
         <button
           onClick={onOpenQuickAdd}
           className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-accent-indigo hover:bg-accent-indigo/90 text-white text-xs font-medium shadow-subtle transition-all cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" />
-          <span>New Task</span>
+          <span className="hidden sm:inline">New Task</span>
         </button>
       </div>
     </header>
