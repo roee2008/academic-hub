@@ -23,14 +23,13 @@ if %errorlevel% neq 0 (
 :: Wait 1 second for dev server readiness
 timeout /t 1 /nobreak >nul
 
-for /f "tokens=4" %%a in ('route print ^| findstr 0.0.0.0 ^| findstr /v "0.0.0.0.*0.0.0.0"') do (
-    set LOCAL_IP=%%a
-)
+set PHONE_IP=127.0.0.1
+for /f %%i in ('powershell -Command "(Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias 'Wi-Fi' -ErrorAction SilentlyContinue).IPAddress | Select-String -NotMatch '169\.' | Select-Object -First 1"') do set PHONE_IP=%%i
 
 echo ======================================================
 echo   Nexus Academic Hub is Ready!
 echo   On this PC:    http://localhost:5173
-echo   On your Phone: http://192.168.16.44:5173
+echo   On your Phone: http://%PHONE_IP%:5173
 echo ======================================================
 
 echo Opening in Opera GX...

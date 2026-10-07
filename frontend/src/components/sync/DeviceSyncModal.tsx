@@ -32,7 +32,12 @@ export const DeviceSyncModal: React.FC<DeviceSyncModalProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'wifi' | 'code'>('wifi');
   const [pcAddress, setPcAddress] = useState<string>(() => {
-    return localStorage.getItem('nexus_sync_pc_address') || 'http://192.168.16.44:8000';
+    const saved = localStorage.getItem('nexus_sync_pc_address');
+    if (saved) return saved;
+    const host = typeof window !== 'undefined' ? window.location.hostname : '127.0.0.1';
+    return host && host !== 'localhost' && host !== '127.0.0.1'
+      ? `http://${host}:8000`
+      : 'http://127.0.0.1:8000';
   });
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
