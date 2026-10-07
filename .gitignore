@@ -1,0 +1,45 @@
+# Python
+backend/venv/
+backend/__pycache__/
+backend/*/__pycache__/
+backend/*/*/__pycache__/
+*.py[cod]
+*$py.class
+backend/.pytest_cache/
+.pytest_cache/
+
+# Secrets and environment configs
+.env
+backend/.env
+backend/.encryption_key
+*.env
+
+# SQLite databases
+backend/*.db
+backend/*.db-wal
+backend/*.db-shm
+*.db
+*.db-wal
+*.db-shm
+
+# Frontend & Node
+frontend/node_modules/
+node_modules/
+frontend/dist/
+dist/
+dist-ssr/
+*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# System & IDE
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
