@@ -20,7 +20,12 @@ const API_BASE = '/api';
 function getStored<T>(key: string, defaultValue: T): T {
   try {
     const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : defaultValue;
+    if (!raw) return defaultValue;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(defaultValue) && !Array.isArray(parsed)) {
+      return defaultValue;
+    }
+    return parsed;
   } catch {
     return defaultValue;
   }
@@ -34,61 +39,22 @@ function setStored<T>(key: string, value: T): void {
   }
 }
 
-// Default offline courses if empty
-export const DEFAULT_OFFLINE_COURSES: Course[] = [
-  {
-    id: 'course_cs106b',
-    account_id: 'acc_phone',
-    name: 'Programming Abstractions',
-    code: 'CS 106B',
-    section: '01',
-    color_tag: '#6366F1',
-    is_hidden: false,
-  },
-  {
-    id: 'course_math51',
-    account_id: 'acc_phone',
-    name: 'Linear Algebra & Calculus',
-    code: 'MATH 51',
-    section: '03',
-    color_tag: '#F59E0B',
-    is_hidden: false,
-  },
-  {
-    id: 'course_bio81',
-    account_id: 'acc_phone',
-    name: 'Molecular Biology',
-    code: 'BIO 81',
-    section: 'A',
-    color_tag: '#10B981',
-    is_hidden: false,
-  },
-  {
-    id: 'course_cs140',
-    account_id: 'acc_phone',
-    name: 'Operating Systems',
-    code: 'CS 140',
-    section: '01',
-    color_tag: '#06B6D4',
-    is_hidden: false,
-  },
-];
+import { SEED_COURSES, SEED_TIMETABLE, SEED_TASKS } from './seedData';
 
-export const DEFAULT_OFFLINE_TIMETABLE: TimetableSlot[] = [
-  { id: 'slot_1', course_id: 'course_cs106b', day_of_week: 1, start_time: '10:00', end_time: '11:20', room: 'Hewlett 200' },
-  { id: 'slot_2', course_id: 'course_math51', day_of_week: 1, start_time: '13:30', end_time: '14:50', room: 'Bishop 102' },
-  { id: 'slot_3', course_id: 'course_cs106b', day_of_week: 3, start_time: '10:00', end_time: '11:20', room: 'Hewlett 200' },
-  { id: 'slot_4', course_id: 'course_bio81', day_of_week: 2, start_time: '11:00', end_time: '12:15', room: 'Gilbert 115' },
-  { id: 'slot_5', course_id: 'course_cs140', day_of_week: 4, start_time: '14:00', end_time: '15:20', room: 'Gates B01' },
-];
+// User's actual courses and timetable as baseline offline seeds
+export const DEFAULT_OFFLINE_COURSES: Course[] = SEED_COURSES;
+export const DEFAULT_OFFLINE_TIMETABLE: TimetableSlot[] = SEED_TIMETABLE;
+export const DEFAULT_OFFLINE_TASKS: Assignment[] = SEED_TASKS;
 
 export async function fetchAccounts(): Promise<Account[]> {
   try {
     const res = await fetch(`${API_BASE}/auth/accounts`);
     if (res.ok) {
       const data = await res.json();
-      setStored('nexus_cached_accounts', data);
-      return data;
+      if (Array.isArray(data)) {
+        setStored('nexus_cached_accounts', data);
+        return data;
+      }
     }
   } catch (err) {
     // Offline mode
@@ -162,8 +128,10 @@ export async function fetchCourses(accountId?: string, includeHidden = false): P
     const res = await fetch(url);
     if (res.ok) {
       const data = await res.json();
-      setStored('nexus_cached_courses', data);
-      return data;
+      if (Array.isArray(data)) {
+        setStored('nexus_cached_courses', data);
+        return data;
+      }
     }
   } catch (err) {
     // Offline
@@ -285,13 +253,15 @@ export async function fetchAssignments(params?: {
     const res = await fetch(`${API_BASE}/assignments?${query.toString()}`);
     if (res.ok) {
       const data = await res.json();
-      setStored('nexus_cached_tasks', data);
-      return data;
+      if (Array.isArray(data)) {
+        setStored('nexus_cached_tasks', data);
+        return data;
+      }
     }
   } catch (err) {
     // Offline
   }
-  return getStored<Assignment[]>('nexus_cached_tasks', []);
+  return getStored<Assignment[]>('nexus_cached_tasks', DEFAULT_OFFLINE_TASKS);
 }
 
 export async function createAssignment(data: {
@@ -379,8 +349,10 @@ export async function fetchFiles(params?: {
     const res = await fetch(`${API_BASE}/files?${query.toString()}`);
     if (res.ok) {
       const data = await res.json();
-      setStored('nexus_cached_files', data);
-      return data;
+      if (Array.isArray(data)) {
+        setStored('nexus_cached_files', data);
+        return data;
+      }
     }
   } catch (err) {
     // Offline
@@ -419,8 +391,10 @@ export async function fetchTimetable(dayOfWeek?: number): Promise<TimetableSlot[
     const res = await fetch(url);
     if (res.ok) {
       const data = await res.json();
-      setStored('nexus_cached_timetable', data);
-      return data;
+      if (Array.isArray(data)) {
+        setStored('nexus_cached_timetable', data);
+        return data;
+      }
     }
   } catch (err) {
     // Offline
@@ -489,7 +463,10 @@ export async function fetchTodaySchedule(clientDay?: number): Promise<TodaySched
   const day = clientDay !== undefined ? clientDay : new Date().getDay();
   try {
     const res = await fetch(`${API_BASE}/timetable/today?client_day=${day}`);
-    if (res.ok) return res.json();
+    if (res.ok) {
+      const data = await res.json();
+      if (data && Array.isArray(data.slots)) return data;
+    }
   } catch (err) {
     // Offline fallback
   }
@@ -502,7 +479,7 @@ export async function fetchTodaySchedule(clientDay?: number): Promise<TodaySched
     .filter((s) => s.day_of_week === day)
     .map((s) => ({ ...s, course: coursesMap.get(s.course_id) }));
 
-  const tasks = getStored<Assignment[]>('nexus_cached_tasks', []);
+  const tasks = getStored<Assignment[]>('nexus_cached_tasks', DEFAULT_OFFLINE_TASKS);
 
   return {
     day_name: dayNames[day],

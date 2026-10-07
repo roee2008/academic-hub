@@ -23,13 +23,19 @@ if %errorlevel% neq 0 (
 :: Wait 1 second for dev server readiness
 timeout /t 1 /nobreak >nul
 
+if not exist "frontend\dist\index.html" (
+    echo [Studio Launcher] Building offline mobile bundle...
+    call npm --prefix frontend run build
+)
+
 set PHONE_IP=127.0.0.1
 for /f %%i in ('powershell -Command "(Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias 'Wi-Fi' -ErrorAction SilentlyContinue).IPAddress | Select-String -NotMatch '169\.' | Select-Object -First 1"') do set PHONE_IP=%%i
 
 echo ======================================================
 echo   Nexus Academic Hub is Ready!
 echo   On this PC:    http://localhost:5173
-echo   On your Phone: http://%PHONE_IP%:5173
+echo   On your Phone: http://%PHONE_IP%:8000 (Install App for Offline Use)
+echo                  http://%PHONE_IP%:5173 (Dev Live Reload)
 echo ======================================================
 
 echo Opening in Opera GX...

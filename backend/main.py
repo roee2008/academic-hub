@@ -62,13 +62,19 @@ app.include_router(timetable.router)
 app.include_router(sync.router)
 app.include_router(export.router)
 
-@app.get("/")
-def read_root():
-    return {
-        "service": "Unified Academic Dashboard API",
-        "status": "ONLINE",
-        "docs": "/docs",
-    }
+from fastapi.staticfiles import StaticFiles
+
+dist_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend", "dist"))
+if os.path.isdir(dist_dir):
+    app.mount("/", StaticFiles(directory=dist_dir, html=True), name="static")
+else:
+    @app.get("/")
+    def read_root():
+        return {
+            "service": "Unified Academic Dashboard API",
+            "status": "ONLINE",
+            "docs": "/docs",
+        }
 
 if __name__ == "__main__":
     import uvicorn
